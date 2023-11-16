@@ -22,8 +22,7 @@ fmtname(char *path)
   return buf;
 }
 
-void
-ls(char *path)
+void ls(char *path)
 {
   char buf[512], *p;
   int fd;

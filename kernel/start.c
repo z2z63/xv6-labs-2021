@@ -28,9 +28,9 @@ start()
 
   // set M Exception Program Counter to main, for mret.
   // requires gcc -mcmodel=medany
-  w_mepc((uint64)main);
+  w_mepc((uint64)main);     // 将main函数的地址写入mepc，随后用mret跳转到main
 
-  // disable paging for now.
+  // disable paging for now. 关闭分页功能，禁用虚拟地址，保证main地址正确
   w_satp(0);
 
   // delegate all interrupts and exceptions to supervisor mode.
