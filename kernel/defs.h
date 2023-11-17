@@ -104,6 +104,7 @@ void            yield(void);
 int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
+int             pgaccess(uint64 base, int len, uint64 mask);
 
 // swtch.S
 void            swtch(struct context*, struct context*);
@@ -126,7 +127,7 @@ void            initsleeplock(struct sleeplock*, char*);
 int             memcmp(const void*, const void*, uint);
 void*           memmove(void*, const void*, uint);
 void*           memset(void*, int, uint);
-char*           safestrcpy(char*, const char*, int);
+char*           safestrcpy(char*dst, const char*src, int n);
 int             strlen(const char*);
 int             strncmp(const char*, const char*, uint);
 char*           strncpy(char*, const char*, int);
@@ -157,19 +158,21 @@ int             uartgetc(void);
 void            kvminit(void);
 void            kvminithart(void);
 void            kvmmap(pagetable_t, uint64, uint64, uint64, int);
-int             mappages(pagetable_t, uint64, uint64, uint64, int);
+int             mappages(pagetable_t pagetable, uint64 va, uint64 size, uint64 pa, int perm);
 pagetable_t     uvmcreate(void);
 void            uvminit(pagetable_t, uchar *, uint);
 uint64          uvmalloc(pagetable_t, uint64, uint64);
 uint64          uvmdealloc(pagetable_t, uint64, uint64);
 int             uvmcopy(pagetable_t, pagetable_t, uint64);
 void            uvmfree(pagetable_t, uint64);
-void            uvmunmap(pagetable_t, uint64, uint64, int);
+void            uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free);
 void            uvmclear(pagetable_t, uint64);
 uint64          walkaddr(pagetable_t, uint64);
-int             copyout(pagetable_t, uint64, char *, uint64);
-int             copyin(pagetable_t, char *, uint64, uint64);
+int             copyout(pagetable_t pagetable, uint64 dstva, char *src, uint64 len);
+int             copyin(pagetable_t pagetable, char *dst, uint64 srcva, uint64 len);
 int             copyinstr(pagetable_t, char *, uint64, uint64);
+void            vmprint(pagetable_t pagetable);
+pte_t*         walk(pagetable_t pagetable, uint64 va, int alloc);
 
 // plic.c
 void            plicinit(void);

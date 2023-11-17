@@ -27,6 +27,9 @@ int uptime(void);
 #ifdef LAB_NET
 int connect(uint32, uint16, uint16);
 #endif
+#ifndef LAB_PGTBL
+#define LAB_PGTBL   // 一点tirck
+#endif
 #ifdef LAB_PGTBL
 int pgaccess(void *base, int len, void *mask);
 // usyscall region

@@ -1,0 +1,25 @@
+Script started on 2023-11-21 21:18:34+08:00 [TERM="xterm-256color" TTY="/dev/pts/2" COLUMNS="184" LINES="12"]
+[1m[7m%[27m[1m[0m                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021t]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;32m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mpgtbl[34m) [33m✗[00m [K[?1h=[?2004ht[1m[31mt[0m[39m[1m[31mt[0m[39m[90mldr script[39m[10D[1m[31mt[1m[31mi[0m[39m[39m [39m [39m [39m [39m [39m [39m [39m [39m [9D[90mme bash 'cat input.txt | ./cmake-build-debug/test'[39m[50D[1m[31mt[1m[31mi[1m[31mm[0m[39m[1m[31mm[1m[31me[0m[39m[0m[33mt[0m[33mi[0m[33mm[0m[33me[39m[33me[33m [39m[33me[39m[39m [39m.[39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [46D[32m.[39m[90m/messageQueue && time echo '--------------------------------' &&time  ./messageQueue[39m[84D[32m.[32m/[39m[4m[32m.[4m[32m/[24m[39m[24m[39m.[24m[39m/[39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [83D
+[J[01;34mconf[0m/             [J[01;32mgrade-lab-pgtbl[0m*  [J[01;34mkernel[0m/           [J[01;34mmkfs[0m/             [J[01;34m__pycache__[0m/      [J[01;34muser[0m/           [J[A[0m[27m[24m[31C[33mtime[39m ./[K[90mmessageQueue && time echo '--------------------------------' &&time  ./messageQueue[39m[83D[4m[32m.[4m[32m/[24m[39m[4m[32m/[4m[32mc[4m[32mo[4m[32mn[4m[32mf[1m[4m[32m/[0m[24m[39m[39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [39m [78D
+[J[7mconf/           [0m  [J[01;32mgrade-lab-pgtbl[0m*  [J[01;34mkernel[0m/           [J[01;34mmkfs[0m/             [J[01;34m__pycache__[0m/      [J[01;34muser[0m/           [J[A[0m[27m[24m[31C[33mtime[39m [4m[32m./conf[1m[4m[32m/[0m[24m[39m[K
+[7mconf/           [0m  [7mconf/           [0m  [A[0m[27m[24m[31C[33mtime[39m [4m[32m./conf[1m[4m[32m/[0m[24m[39m[K[24m[32m.[24m[32m/[24m[32mg[24m[32mr[24m[32ma[24m[32md[0m[24m[32me[32m-lab-pgtbl[39m
+[18C[7mgrade-lab-pgtbl*[0m  [01;34mconf[0m/             [A[0m[27m[24m[31C[33mtime[39m [32m./grade-lab-pgtbl[39m[K
+[J[A[53C[1m [0m[0m [?1l>[?2004l
+[J]2;time ./grade-lab-pgtbl]1;timemake: 'kernel/kernel' is up to date.
+== Test pgtbltest == (2.4s) 
+== Test   pgtbltest: ugetpid == 
+  pgtbltest: ugetpid: [32mOK[0m 
+== Test   pgtbltest: pgaccess == 
+  pgtbltest: pgaccess: [32mOK[0m 
+== Test pte printout == pte printout: [32mOK[0m (1.3s) 
+== Test answers-pgtbl.txt == answers-pgtbl.txt: [32mOK[0m 
+== Test usertests == (451.1s) 
+== Test   usertests: all tests == 
+  usertests: all tests: [32mOK[0m 
+== Test time == 
+time: [32mOK[0m 
+Score: 46/46
+./grade-lab-pgtbl  1347.21s user 12.94s system 298% cpu 7:34.91 total
+[1m[7m%[27m[1m[0m                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;32m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mpgtbl[34m) [33m✗[00m [K[?1h=[?2004h[?2004l
+
+Script done on 2023-11-21 21:27:04+08:00 [COMMAND_EXIT_CODE="0"]
