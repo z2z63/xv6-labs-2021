@@ -121,6 +121,7 @@ panic(char *s)
   printf("panic: ");
   printf(s);
   printf("\n");
+  backtrace();      // 方便调试
   panicked = 1; // freeze uart output from other CPUs
   for(;;)
     ;
@@ -131,4 +132,54 @@ printfinit(void)
 {
   initlock(&pr.lock, "pr");
   pr.locking = 1;
+}
+
+/*
+ * Stack
+                   .
+                   .
+      +->          .
+      |   +-----------------+   |
+      |   | return address  |   |
+      |   |   previous fp ------+
+      |   | saved registers |
+      |   | local variables |
+      |   |       ...       | <-+
+      |   +-----------------+   |
+      |   | return address  |   |
+      +------ previous fp   |   |
+          | saved registers |   |
+          | local variables |   |
+      +-> |       ...       |   |
+      |   +-----------------+   |
+      |   | return address  |   |
+      |   |   previous fp ------+
+      |   | saved registers |
+      |   | local variables |
+      |   |       ...       | <-+
+      |   +-----------------+   |
+      |   | return address  |   |
+      +------ previous fp   |   |
+          | saved registers |   |
+          | local variables |   |
+  $fp --> |       ...       |   |
+          +-----------------+   |
+          | return address  |   |
+          |   previous fp ------+
+          | saved registers |
+  $sp --> | local variables |
+          +-----------------+
+ *
+ * */
+void backtrace(){
+    printf("backtrace:\n");
+    uint64 current_fp = r_fp();
+    uint64 end = PGROUNDUP(current_fp);   // 内核的栈只分配了一页，而栈底在高地址方向，所以向上取整就能找到调用堆栈的最底部
+    while (current_fp < end){
+        uint64 * ptr = (uint64*)(current_fp);   // ptr在高地址，只能使用负数偏移量才能访问到fp和ra
+                                                // 因为只能使用负数偏移量，所以不能用结构体
+                          // ptr[-1] = *(ptr-1)  一点trick
+        printf("%p\n", ptr[-1]-4);   // 读取ra
+        current_fp = ptr[-2];   // 读取fp
+    }
 }

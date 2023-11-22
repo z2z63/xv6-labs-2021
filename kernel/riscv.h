@@ -364,3 +364,15 @@ sfence_vma()
 
 typedef uint64 pte_t;
 typedef uint64 *pagetable_t; // 512 PTEs
+
+/*
+ * GCC does not inline any functions when not optimizing unless you specify the ‘always_inline’ attribute for the function
+ * 见 https://gcc.gnu.org/onlinedocs/gcc/Inline.html#:~:text=GCC%20does%20not%20inline%20any,specific%20to%20GNU%20C90%20inlining.
+ * 因为我修改了CFLAGS，禁用了优化，必须使用always_inline强制内联，否则会r_fp会返回r_fp函数内的fp
+ * */
+static inline uint64  r_fp() __attribute__((always_inline));
+static inline uint64 r_fp() {
+    uint64 x;
+    asm volatile("mv %0, s0" : "=r" (x) );
+    return x;
+}
