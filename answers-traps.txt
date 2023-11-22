@@ -1,0 +1,127 @@
+# Which registers contain arguments to functions? For example, which register holds 13 in main's call to printf?
+根据RISCV的调用约定，使用a0-a7和fa0-fa7共16个寄存器传递参数。根据反汇编代码或者参数的位置，可以知道13这个数保存在a2中
+
+
+
+
+# Where is the call to function f in the assembly code for main? Where is the call to g? (Hint: the compiler may inline functions.)
+因为我修改过makefile的CFLAGS，将-O改成了-O0，所以编译器不会优化
+见反汇编代码
+    ```
+    auipc	ra,0x0
+    52:	fce080e7          	jalr	-50(ra)
+    ```
+`auipc ra, 0x0`将pc的值保存到ra中，随后jalr使用寄存器相对寻址方式跳转到函数f
+调用g的反汇编代码
+    ```
+    30:	00000097          	auipc	ra,0x0
+    34:	fd0080e7          	jalr	-48(ra) # 0 <g>
+    ```
+同理
+
+
+
+
+# At what address is the function printf located?
+从call的反汇编代码中可以看出printf函数地址为`0000000000000a34`（16进制）
+然而这个值在其他目标文件中可能不一样，因为根据makefile指定的编译方式
+    ```
+    _%: %.o $(ULIB)
+    	$(LD) $(LDFLAGS) -N -e main -Ttext 0 -o $@ $^
+    	$(OBJDUMP) -S $@ > $*.asm
+    	$(OBJDUMP) -t $@ | sed '1,/SYMBOL TABLE/d; s/ .* / /; /^$$/d' > $*.sym
+    ```
+可以知道ULIB是静态链接到用户态程序中的
+
+
+
+
+# What value is in the register ra just after the jalr to printf in main?
+根据riscv的手册，寄存器ra的用途是保存返回地址（Return Address)，所以子程序会返回到ra指向的地址，而ra应该指向跳转到子程序的jalr指令的
+下一条指令
+
+
+
+
+# Run the following code.
+
+#  	unsigned int i = 0x00646c72;
+#  	printf("H%x Wo%s", 57616, &i);
+
+#  What is the output? Here's an ASCII table that maps bytes to characters.
+# The output depends on that fact that the RISC-V is little-endian.
+# If the RISC-V were instead big-endian what would you set i to in order to yield the same output?
+# Would you need to change 57616 to a different value?
+输出`HE110 World`
+因为%x将57616以16进制输出，即输出E110。同时%s将&i解释成字符串，也就是将&i后的每一个字节当作ASCII编码的字符输出，直到遇到0。
+而RISCV是小端系统，所以i对应的内存为
+    | 0x72 | 0x6c | 0x64 | 0x00 |
+查ASCII表可知这四个比特，分别对应字符'r' , 'l' , 'd' , '\0'
+如果RISCV改成大端，想要获得相同的输出，应该保持i的内存不变，所以i的补码应该为0x726c6400，对应的真值为1919706112
+不需要，因为大小端只是多字节结构中LSB所处的位置不同，而%x面向的是真值
+
+
+
+
+# In the following code, what is going to be printed after 'y='? (note: the answer is not a specific value.) Why does this happen?
+  	printf("x=%d y=%d", 3);
+C的变长参数，用法为
+    ```
+    fn(int x, ...)
+    ```
+然后子程序要使用变长参数，需要这样做
+    ```
+    va_list ap;
+    va_start(ap, fmt);
+    int x = va_arg(ap, int);    // 使用va_arg按顺序取出变长参数
+    char c = va_arg(ag,char);
+    ```
+`va_list`和`va_start`都是编译器提供的tirck，相当于保留字。
+在汇编层面，`va_list`实际上会将所有参数压栈。查看call的反汇编代码可以证明这一点
+    ```
+     a2e:	e40c                	sd	a1,8(s0)
+     a30:	e810                	sd	a2,16(s0)
+     a32:	ec14                	sd	a3,24(s0)
+     a34:	f018                	sd	a4,32(s0)
+     a36:	f41c                	sd	a5,40(s0)
+     a38:	03043823          	sd	a6,48(s0)
+     a3c:	03143c23          	sd	a7,56(s0)
+    ```
+与x86不同的是，riscv提供了8个寄存器专用于传递整数参数，还有8个寄存器用于传递浮点数参数。8个寄存器在绝大多数情况下都是足够的，
+所以riscv优先使用a0-a7寄存器传递参数，这一点与x86常用的埋入栈的传参方法不同
+此外，riscv没有提供栈帧指针寄存器，理由是函数的prologue阶段就分配好栈帧，然后esp减去栈帧长度就能得到栈底，所以不必使用栈底指针寄存器
+所以，riscv的反汇编代码中，栈帧内的寻址方式往往是根据s0，而s0可以改变，这为理解反汇编代码造成了干扰，这相当于x86栈帧内使用相对esp寻址，
+而esp随时浮动。
+总之，`va_list ap;`造成了一次复制行为，将所有传参寄存器都保存到栈上，可以认为这就构成了一个`va_list`对象，这个对象的大小为7*8=56字节
+而`va_start(ap, fmt);`会被翻译成计算得出`va_list`对象的地址
+`va_arg`是一个宏，定义如下
+    ```
+    #define va_arg(v,l)	__builtin_va_arg(v,l)
+    ```
+这又是编译器的一个trick，实际上va_arg会被翻译成如下
+    ```
+    ld	a5,-72(s0)
+    addi	a4,a5,8
+    sd	a4,-72(s0)
+    lw	a4,0(a5)
+    ```
+-72(s0)即为`ap`的地址，可以看出，每次使用`va_arg`,`ap`指向的地址，或者说`ap`这个`va_list`对象的首地址都会改变，从而达到每次调用，
+都能取出下一个参数。此外，使用`lw	a4,0(a5)`完成了指针的解引用，也就是取出`va_list`的“第一个元素”，至于这个元素的长度，就由`va_arg`的
+第二个参数指定。
+
+前面说了很多变长参数的实现原理，总之，在riscv中，如果变长参数只提供了一个，而子程序尝试取两个，并不会报错，它会取出变长参数传递时
+下一个传参寄存器的值。因为`va_list`并没有记录变长参数的个数，相反，x86中常常使用NULL作为变长参数对象的结束，
+所以在x86中能知道变长参数的个数。
+
+call的main函数并没有设置a2的值，exec系统调用也只为main函数准备了两个参数`argc`和`argv`，所以a2寄存器也不会被设置，
+进入gdb，在main程序的开头打上断点，查看a2寄存器
+    ```
+    (gdb) i r a2
+    a2             0x1cc0	7360
+    ```
+进入qmeu，执行call
+    ```
+    $ call
+    x=3 y=7360
+    ```
+证明第二个%d会被替换成a2寄存器的值
