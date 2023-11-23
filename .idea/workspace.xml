@@ -26,13 +26,20 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bef93721-42f2-4efc-b8a1-49f5c2c0af28" name="Changes" comment="RISC-V assembly完成">
+    <list default="true" id="bef93721-42f2-4efc-b8a1-49f5c2c0af28" name="Changes" comment="Backtrace完成">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/answers-traps.txt" beforeDir="false" afterPath="$PROJECT_DIR$/answers-traps.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kernel/defs.h" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/defs.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/kernel/printf.c" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/printf.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kernel/proc.c" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/proc.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kernel/proc.h" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/proc.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kernel/riscv.h" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/riscv.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kernel/syscall.c" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/syscall.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kernel/syscall.h" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/syscall.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/kernel/sysproc.c" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/sysproc.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kernel/trampoline.S" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/trampoline.S" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/kernel/trap.c" beforeDir="false" afterPath="$PROJECT_DIR$/kernel/trap.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user/user.h" beforeDir="false" afterPath="$PROJECT_DIR$/user/user.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/user/usys.pl" beforeDir="false" afterPath="$PROJECT_DIR$/user/usys.pl" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,27 +102,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "ShowUsagesActions.previewPropertyKey": "true",
-    "WebServerToolWindowFactoryState": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "com.jetbrains.cidr.cpp.cmake.workspace.CMakeCacheInvalidator.marker": "true",
-    "git-widget-placeholder": "traps",
-    "last_opened_file_path": "/home/arch/src/xv6-labs-2021/Makefile",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
-    "structure.view.defaults.are.configured": "true",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ShowUsagesActions.previewPropertyKey&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;com.jetbrains.cidr.cpp.cmake.workspace.CMakeCacheInvalidator.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;traps&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/arch/src/xv6-labs-2021/Makefile&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
+    &quot;structure.view.defaults.are.configured&quot;: &quot;true&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Remote Debug.gdb">
     <configuration name="gdb" type="CLion_Remote" version="1" remoteCommand="127.0.0.1:26000" symbolFile="$PROJECT_DIR$/kernel/kernel" sysroot="">
       <debugger kind="GDB">/usr/bin/riscv64-linux-gnu-gdb</debugger>
@@ -164,7 +172,9 @@
       <workItem from="1700579606864" duration="113000" />
       <workItem from="1700579728368" duration="734000" />
       <workItem from="1700580472726" duration="12000" />
-      <workItem from="1700618357323" duration="20607000" />
+      <workItem from="1700618357323" duration="21925000" />
+      <workItem from="1700651756002" duration="14841000" />
+      <workItem from="1700704348558" duration="9769000" />
     </task>
     <task id="LOCAL-00002" summary="RISC-V assembly完成">
       <option name="closed" value="true" />
@@ -174,7 +184,15 @@
       <option name="project" value="LOCAL" />
       <updated>1700639288132</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="Backtrace完成">
+      <option name="closed" value="true" />
+      <created>1700650646548</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1700650646548</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -207,7 +225,29 @@
     <MESSAGE value="bug found" />
     <MESSAGE value="lab3完成" />
     <MESSAGE value="RISC-V assembly完成" />
-    <option name="LAST_COMMIT_MESSAGE" value="RISC-V assembly完成" />
+    <MESSAGE value="Backtrace完成" />
+    <option name="LAST_COMMIT_MESSAGE" value="Backtrace完成" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/kernel/trap.c</url>
+          <line>67</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/kernel/trap.c</url>
+          <line>86</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/kernel/proc.c</url>
+          <line>685</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

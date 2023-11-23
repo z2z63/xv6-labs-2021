@@ -64,6 +64,7 @@ uservec:
         csrr t0, sscratch
         sd t0, 112(a0)
 
+        # 从p->trapframe中取数据，与结构体的内存布局强绑定
         # restore kernel stack pointer from p->trapframe->kernel_sp
         ld sp, 8(a0)
 

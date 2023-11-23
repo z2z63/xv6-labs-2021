@@ -134,6 +134,11 @@ found:
     release(&p->lock);
     return 0;
   }
+  p->interval = 0;
+  p->time_left = 0;
+  p->handler = 0;
+  p->old_epc = 0;
+  p->alarm_statue = 0;    // 初始化
 
   // Set up new context to start executing at forkret,
   // which returns to user space.
@@ -164,6 +169,12 @@ freeproc(struct proc *p)
   p->killed = 0;
   p->xstate = 0;
   p->state = UNUSED;
+
+  p->interval = 0;
+  p->time_left = 0;
+  p->handler = 0;
+  p->old_epc = 0;
+  p->alarm_statue = 0;    //清空alarm
 }
 
 // Create a user page table for a given process,
@@ -653,4 +664,25 @@ procdump(void)
     printf("%d %s %s", p->pid, state, p->name);
     printf("\n");
   }
+}
+
+int sigalarm(int interval, uint64 handler){
+    struct proc *p = myproc();
+    if(interval <= 0 || handler == 0){
+        p->alarm_statue = 0;
+        return 0;
+    }
+    p->alarm_statue = 2;
+    p->interval = interval;
+    p->time_left = p->interval;
+    p->handler = handler;
+    return 0;
+}
+
+int sigreturn(){
+    struct proc *p = myproc();
+    p->time_left = p->interval;   // 重置剩余时间，回到主程序
+    p->alarm_statue = 2;
+    memmove(p->trapframe, &p->register_backup, sizeof(struct trapframe));
+    return 0;
 }

@@ -105,9 +105,12 @@ void            yield(void);
 int             either_copyout(int user_dst, uint64 dst, void *src, uint64 len);
 int             either_copyin(void *dst, int user_src, uint64 src, uint64 len);
 void            procdump(void);
+int             sigalarm(int interval, uint64 handler);
+int             sigreturn();
 
 // swtch.S
-void            swtch(struct context*, struct context*);
+// Save current registers in old. Load from new.
+void            swtch(struct context *old, struct context *new);
 
 // spinlock.c
 void            acquire(struct spinlock*);
@@ -125,7 +128,7 @@ void            initsleeplock(struct sleeplock*, char*);
 
 // string.c
 int             memcmp(const void*, const void*, uint);
-void*           memmove(void*, const void*, uint);
+void*           memmove(void *dst, const void *src, uint n);
 void*           memset(void*, int, uint);
 char*           safestrcpy(char*, const char*, int);
 int             strlen(const char*);

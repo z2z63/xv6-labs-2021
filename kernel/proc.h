@@ -82,6 +82,38 @@ struct trapframe {
 
 enum procstate { UNUSED, USED, SLEEPING, RUNNABLE, RUNNING, ZOMBIE };
 
+struct all_register{
+    uint64 ra;
+    uint64 sp;
+    uint64 t0;
+    uint64 t1;
+    uint64 t2;
+    uint64 s0;
+    uint64 s1;
+    uint64 a0;
+    uint64 a1;
+    uint64 a2;
+    uint64 a3;
+    uint64 a4;
+    uint64 a5;
+    uint64 a6;
+    uint64 a7;
+    uint64 s2;
+    uint64 s3;
+    uint64 s4;
+    uint64 s5;
+    uint64 s6;
+    uint64 s7;
+    uint64 s8;
+    uint64 s9;
+    uint64 s10;
+    uint64 s11;
+    uint64 t3;
+    uint64 t4;
+    uint64 t5;
+    uint64 t6;
+};
+
 // Per-process state
 struct proc {
   struct spinlock lock;
@@ -105,4 +137,11 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  uint64 interval;
+  uint64 time_left;
+  uint64 handler;
+  uint64 old_epc;              // 记录sigalarm需要的参数
+  char alarm_statue;     // 0未开启，1刚刚生效，2生效中并在主程序，3生效中并在handler中，4生效而且handler退出，5关闭信号
+  struct trapframe register_backup;   // 在主程序和handler之间切换时，保存context
 };
