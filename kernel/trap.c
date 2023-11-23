@@ -84,7 +84,7 @@ usertrap(void) {
             p->time_left -= 1;
             p->alarm_statue = 3;
 
-            memmove(&p->register_backup, p->trapframe, sizeof(struct trapframe));
+            *p->register_backup = *p->trapframe;
             p->trapframe->epc = p->handler;
             yield();
         } else if (p->alarm_statue == 3) {   // alarm生效而且在handler中

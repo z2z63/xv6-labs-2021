@@ -143,5 +143,5 @@ struct proc {
   uint64 handler;
   uint64 old_epc;              // 记录sigalarm需要的参数
   char alarm_statue;     // 0未开启，1刚刚生效，2生效中并在主程序，3生效中并在handler中，4生效而且handler退出，5关闭信号
-  struct trapframe register_backup;   // 在主程序和handler之间切换时，保存context
+  struct trapframe* register_backup;   // 在主程序和handler之间切换时，保存context
 };
