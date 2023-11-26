@@ -343,6 +343,7 @@ sfence_vma()
 #define PTE_W (1L << 2)
 #define PTE_X (1L << 3)
 #define PTE_U (1L << 4) // 1 -> user can access
+#define PTE_REF (1L << 8)   // 使用RSW作为引用标志为位，当该位置1时，页错误后可以复制出新的页
 
 // shift a physical address to the right place for a PTE.
 #define PA2PTE(pa) ((((uint64)pa) >> 12) << 10)

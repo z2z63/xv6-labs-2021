@@ -1,0 +1,25 @@
+Script started on 2023-11-26 21:25:19+08:00 [TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="184" LINES="7"]
+[1m[7m%[27m[1m[0m                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;32m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mcow[34m) [33m✗[00m [K[?1h=[?2004hscript[32ms[32mc[32mr[32mi[32mp[32mt[39m[32mr[32mm[32m [32mt[32my[32mp[39mescript[13D[32mr[32mm[39m[39m [39m[4mt[39m[4my[39m[4mp[4me[4ms[4mc[4mr[4mi[4mp[4mt[24m[13D[32m.[32m/[39mg[4mr[4ma[4md[4me[4m-[4ml[4ma[4mb[4m-[4mc[24mow[15D[32m.[32m/[32mg[24m[32mr[24m[32ma[24m[32md[24m[32me[24m[32m-[24m[32ml[24m[32ma[24m[32mb[24m[32m-[24m[32mc[32mo[32mw[39m[?1l>[?2004l
+]2;./grade-lab-cow]1;./grade-lab-cowmake: 'kernel/kernel' is up to date.
+== Test running cowtest == (15.5s) 
+== Test   simple == 
+  simple: [32mOK[0m 
+== Test   three == 
+  three: [32mOK[0m 
+== Test   file == 
+  file: [32mOK[0m 
+== Test usertests == (465.0s) 
+    (Old xv6.out.usertests failure log removed)
+== Test   usertests: copyin == 
+  usertests: copyin: [32mOK[0m 
+== Test   usertests: copyout == 
+  usertests: copyout: [32mOK[0m 
+== Test   usertests: all tests == 
+  usertests: all tests: [32mOK[0m 
+== Test time == 
+time: [31mFAIL[0m 
+    Cannot read time.txt
+Score: 109/110
+[1m[7m%[27m[1m[0m                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;31m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mcow[34m) [33m✗[00m [K[?1h=[?2004h[?2004l
+
+Script done on 2023-11-26 21:35:01+08:00 [COMMAND_EXIT_CODE="1"]
