@@ -1,6 +1,6 @@
-#include "kernel/types.h"
-#include "kernel/stat.h"
-#include "user/user.h"
+#include "../kernel/types.h"
+#include "../kernel/stat.h"
+#include "user.h"
 
 /* Possible states of a thread: */
 #define FREE        0x0
@@ -12,12 +12,13 @@
 
 
 struct thread {
+  uint64     sp;
   char       stack[STACK_SIZE]; /* the thread's stack */
   int        state;             /* FREE, RUNNING, RUNNABLE */
 };
 struct thread all_thread[MAX_THREAD];
 struct thread *current_thread;
-extern void thread_switch(uint64, uint64);
+extern void thread_switch(uint64 old, uint64 new);
               
 void 
 thread_init(void)
@@ -62,6 +63,7 @@ thread_schedule(void)
      * Invoke thread_switch to switch from t to next_thread:
      * thread_switch(??, ??);
      */
+      thread_switch((uint64)t, (uint64)current_thread);
   } else
     next_thread = 0;
 }
@@ -75,7 +77,11 @@ thread_create(void (*func)())
     if (t->state == FREE) break;
   }
   t->state = RUNNABLE;
-  // YOUR CODE HERE
+
+  // 为线程启动创建一个栈的环境
+  t->sp = (uint64)t->stack + STACK_SIZE;    // 栈的生长方向是低地址，所以当线程启动时，sp需要指向stack数组的最高地址
+  *(uint64*)(t->stack + STACK_SIZE - 8) = (uint64)func;  // 随后会从这个位置加载func的地址到ra，然后跳转到ra指向的地址
+  *(uint64*)(t->stack + STACK_SIZE - 16) = (uint64)(t->stack + STACK_SIZE);    // fp
 }
 
 void 

@@ -22,15 +22,22 @@ barrier_init(void)
   bstate.nthread = 0;
 }
 
-static void 
-barrier()
+/**
+ * 前n-1个线程进入时，nthread++，然后在条件变量上等待
+ * 第n个线程进入时，nthread++，满足条件，然后唤醒所有线程，自己再负责更新thread和round
+ * */
+static void barrier()
 {
-  // YOUR CODE HERE
-  //
-  // Block until all threads have called barrier() and
-  // then increment bstate.round.
-  //
-  
+    pthread_mutex_lock(&bstate.barrier_mutex);
+    bstate.nthread++;
+    if(bstate.nthread == nthread){
+        pthread_cond_broadcast(&bstate.barrier_cond);
+        bstate.nthread = 0;
+        bstate.round++;
+    }else{
+        pthread_cond_wait(&bstate.barrier_cond, &bstate.barrier_mutex);
+    }
+    pthread_mutex_unlock(&bstate.barrier_mutex);
 }
 
 static void *

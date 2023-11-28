@@ -1,0 +1,18 @@
+Script started on 2023-11-27 23:39:37+08:00 [TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="216" LINES="11"]
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;32m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mthread[34m) [33m✗[00m [K[?1h=[?2004h.[32m.[39m[32m.[39m[90m/grade-lab-thread[39m[17D[32m.[32m/[39m[4m[32m.[4m[32m/[24m[39m[39mg[39mr[39ma[39md[39me[39m-[39ml[39ma[39mb[39m-[39mt[39mh[39mr[39me[39ma[39md[18D[24m[32m.[24m[32m/[32mg[32mr[32ma[32md[32me[32m-[32ml[32ma[32mb[32m-[32mt[32mh[32mr[32me[32ma[32md[39m[?1l>[?2004l
+]2;./grade-lab-thread]1;./grade-lab-threadmake: 'kernel/kernel' is up to date.
+== Test uthread == uthread: [32mOK[0m (4.6s) 
+== Test answers-thread.txt == answers-thread.txt: [32mOK[0m 
+== Test ph_safe == make: 'ph' is up to date.
+ph_safe: [32mOK[0m (12.5s) 
+== Test ph_fast == make: 'ph' is up to date.
+ph_fast: [32mOK[0m (28.6s) 
+== Test barrier == make: 'barrier' is up to date.
+barrier: [32mOK[0m (2.8s) 
+== Test time == 
+time: [31mFAIL[0m 
+    Cannot read time.txt
+Score: 59/60
+[1m[7m%[27m[1m[0m                                                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;31m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mthread[34m) [33m✗[00m [K[?1h=[?2004h[?2004l
+
+Script done on 2023-11-27 23:40:33+08:00 [COMMAND_EXIT_CODE="1"]

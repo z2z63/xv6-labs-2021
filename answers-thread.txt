@@ -1,0 +1,7 @@
+# Why are there missing keys with 2 threads, but not with 1 thread?
+Identify a sequence of events with 2 threads that can lead to a key being missing
+
+因为哈希表需要互斥访问（原始的哈希表不是线程安全的），否则会出现存取错误。1线程的情况下不会有并发访问的问题，2线程的情况下可能出现并发访问。
+
+假设线程1在某个bucket处的插入，需要先找到链表尾然后在尾部插入。在线程1找到尾部时，被剥夺CPU，转而执行线程2，线程2在同一个bucket处完成
+了插入，然后线程1恢复执行，在同一个位置覆盖了线程2插入的值，这样线程2插入的值就丢失了。
