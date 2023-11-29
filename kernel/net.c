@@ -358,7 +358,7 @@ void net_rx(struct mbuf *m)
   struct eth *ethhdr;
   uint16 type;
 
-  ethhdr = mbufpullhdr(m, *ethhdr);
+  ethhdr = mbufpullhdr(m, *ethhdr);     // 分离header 和 body
   if (!ethhdr) {
     mbuffree(m);
     return;

@@ -1,3 +1,7 @@
+#ifndef LAB_NET
+#define LAB_NET 1
+#endif
+
 struct buf;
 struct context;
 struct file;

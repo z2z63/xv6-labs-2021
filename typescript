@@ -1,0 +1,19 @@
+Script started on 2023-11-29 19:47:48+08:00 [TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="184" LINES="14"]
+[1m[7m%[27m[1m[0m                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;32m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mnet[34m) [33m✗[00m [K[?1h=[?2004h.[32m.[39m[32m.[39m[90m/grade-lab-net [39m[15D[32m.[32m/[39m[4m[32m.[4m[32m/[24m[39m[39mg[39mr[39ma[39md[39me[39m-[39ml[39ma[39mb[39m-[39mn[39me[39mt[39m [16D[24m[32m.[24m[32m/[32mg[32mr[32ma[32md[32me[32m-[32ml[32ma[32mb[32m-[32mn[32me[32mt[39m[1C[?1l>[?2004l
+]2;./grade-lab-net]1;./grade-lab-netmake: 'kernel/kernel' is up to date.
+== Test running nettests == (4.3s) 
+== Test   nettest: ping == 
+  nettest: ping: [32mOK[0m 
+== Test   nettest: single process == 
+  nettest: single process: [32mOK[0m 
+== Test   nettest: multi-process == 
+  nettest: multi-process: [32mOK[0m 
+== Test   nettest: DNS == 
+  nettest: DNS: [32mOK[0m 
+== Test time == 
+time: [31mFAIL[0m 
+    Cannot read time.txt
+Score: 99/100
+[1m[7m%[27m[1m[0m                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;31m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mnet[34m) [33m✗[00m [K[?1h=[?2004h[?2004l
+
+Script done on 2023-11-29 19:47:59+08:00 [COMMAND_EXIT_CODE="1"]

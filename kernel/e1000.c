@@ -92,8 +92,11 @@ e1000_init(uint32 *xregs)
   regs[E1000_IMS] = (1 << 7); // RXDW -- Receiver Descriptor Write Back
 }
 
-int
-e1000_transmit(struct mbuf *m)
+/**
+ * 发送数据是进程通过系统调用，CPU主动进行的
+ * 可能有多个进程同时发送数据，所以需要加锁
+ * */
+int e1000_transmit(struct mbuf *m)
 {
   //
   // Your code here.
@@ -102,12 +105,26 @@ e1000_transmit(struct mbuf *m)
   // the TX descriptor ring so that the e1000 sends it. Stash
   // a pointer so that it can be freed after sending.
   //
-  
-  return 0;
+    acquire(&e1000_lock);
+    struct tx_desc* desc = &tx_ring[regs[E1000_TDT]];
+    desc->addr = (uint64) m->head;
+    desc->length = m->len;
+    desc->cmd = E1000_TXD_CMD_RS | E1000_TXD_CMD_EOP;
+    regs[E1000_TDT] = (regs[E1000_TDT] + 1) % TX_RING_SIZE;
+    while (!(desc->status & E1000_TXD_STAT_DD))
+        ;
+    release(&e1000_lock);
+    mbuffree(m);
+
+    return 0;
 }
 
-static void
-e1000_recv(void)
+/**
+ * 进入函数前关闭了中断，所以不必考虑中断处理程序重进入的问题
+ * 尽管清除了RDTR，但还是会发生收到多个帧只发出一次中断的情况
+ * 不用加锁
+ * */
+static void e1000_recv(void)
 {
   //
   // Your code here.
@@ -115,6 +132,22 @@ e1000_recv(void)
   // Check for packets that have arrived from the e1000
   // Create and deliver an mbuf for each packet (using net_rx()).
   //
+
+//  RDH到RDT之间的所有descriptor都归网卡所有，这点与发送缓冲队列不同
+    while (1){
+        uint32 index = (regs[E1000_RDT] + 1) % RX_RING_SIZE;
+        struct rx_desc* desc = &rx_ring[index];
+        if(!(desc->status & E1000_RXD_STAT_DD)){
+            break;
+        }
+        struct mbuf* m = mbufalloc(0);
+        memmove(m->head, (const void *) desc->addr, desc->length);
+        m->len = desc->length;
+        desc->status = 0;
+        regs[E1000_RDT] = index;
+        net_rx(m);
+    }
+
 }
 
 void
