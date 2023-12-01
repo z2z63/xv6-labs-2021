@@ -8,6 +8,10 @@ struct spinlock;
 struct sleeplock;
 struct stat;
 struct superblock;
+#ifndef LAB_LOCK
+#define LAB_LOCK 1
+#endif
+
 #ifdef LAB_NET
 struct mbuf;
 struct sock;

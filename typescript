@@ -1,0 +1,22 @@
+Script started on 2023-12-01 20:19:41+08:00 [TERM="xterm-256color" TTY="/dev/pts/3" COLUMNS="184" LINES="17"]
+[1m[7m%[27m[1m[0m                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;32m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mlock[34m) [33m✗[00m [K[?1h=[?2004hscript[32ms[32mc[32mr[32mi[32mp[32mt[39m[32mm[32ma[32mk[32me[32m [32mq[39memu[32me[39m[39m [39mq[3Cclean[10D[32m.[32m/[32mg[32mr[39made-lab-lock[13D[32mr[32ma[32md[32me[32m-[32ml[32ma[32mb[32m-[32ml[32mo[32mc[32mk[39m[?1l>[?2004l
+]2;./grade-lab-lock]1;./grade-lab-lockmake: 'kernel/kernel' is up to date.
+== Test running kalloctest == (232.3s) 
+== Test   kalloctest: test1 == 
+  kalloctest: test1: [32mOK[0m 
+== Test   kalloctest: test2 == 
+  kalloctest: test2: [32mOK[0m 
+== Test kalloctest: sbrkmuch == kalloctest: sbrkmuch: [32mOK[0m (23.7s) 
+== Test running bcachetest == (18.5s) 
+== Test   bcachetest: test0 == 
+  bcachetest: test0: [32mOK[0m 
+== Test   bcachetest: test1 == 
+  bcachetest: test1: [32mOK[0m 
+== Test usertests == usertests: [32mOK[0m (292.0s) 
+== Test time == 
+time: [31mFAIL[0m 
+    Cannot read time.txt
+Score: 69/70
+[1m[7m%[27m[1m[0m                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;31m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mlock[34m) [33m✗[00m [K[?1h=[?2004h[?2004l
+
+Script done on 2023-12-01 20:30:13+08:00 [COMMAND_EXIT_CODE="1"]
