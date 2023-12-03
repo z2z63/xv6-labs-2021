@@ -1,0 +1,18 @@
+Script started on 2023-12-03 22:07:27+08:00 [TERM="xterm-256color" TTY="/dev/pts/1" COLUMNS="184" LINES="10"]
+[1m[7m%[27m[1m[0m                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;32m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mfs[34m) [33m✗[00m [K[?1h=[?2004h.[32m.[39m[32m.[39m[90m/grade-lab-fs[39m[13D[32m.[32m/[39m[4m[32m.[4m[32m/[24m[39m[39mg[39mr[39ma[39md[39me[39m-[39ml[39ma[39mb[39m-[39mf[39ms[14D[24m[32m.[24m[32m/[32mg[32mr[32ma[32md[32me[32m-[32ml[32ma[32mb[32m-[32mf[32ms[39m[?1l>[?2004l
+]2;./grade-lab-fs]1;./grade-lab-fsmake: 'kernel/kernel' is up to date.
+== Test running bigfile == running bigfile: [32mOK[0m (230.0s) 
+    (Old xv6.out.bigfile failure log removed)
+== Test running symlinktest == (2.0s) 
+== Test   symlinktest: symlinks == 
+  symlinktest: symlinks: [32mOK[0m 
+== Test   symlinktest: concurrent symlinks == 
+  symlinktest: concurrent symlinks: [32mOK[0m 
+== Test usertests == usertests: [32mOK[0m (539.9s) 
+== Test time == 
+time: [31mFAIL[0m 
+    Cannot read time.txt
+Score: 99/100
+[1m[7m%[27m[1m[0m                                                                                                                                                                                        ]2;arch@arch:~/src/xv6-labs-2021]1;..xv6-labs-2021]7;file://arch/home/arch/src/xv6-labs-2021\[0m[27m[24m[J[01;31m➜  [36mxv6-labs-2021[00m [01;34mgit:([31mfs[34m) [33m✗[00m [K[?1h=[?2004h[?2004l
+
+Script done on 2023-12-03 22:20:33+08:00 [COMMAND_EXIT_CODE="1"]

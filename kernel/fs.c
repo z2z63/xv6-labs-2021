@@ -400,6 +400,29 @@ bmap(struct inode *ip, uint bn)
     brelse(bp);
     return addr;
   }
+  bn -= NINDIRECT;
+  if(bn < N2INDIRECT){
+    if((addr = ip->addrs[NDIRECT + 1]) == 0){       // 取一级表
+      ip->addrs[NDIRECT + 1] = addr = balloc(ip->dev);
+    }
+    bp = bread(ip->dev, addr);
+
+    a = (uint*)bp->data;
+    if((addr = a[bn / NINDIRECT]) == 0){        // 取二级表
+        a[bn / NINDIRECT] = addr = balloc(ip->dev);
+        log_write(bp);
+    }
+    brelse(bp);
+    bp = bread(ip->dev, addr);
+
+    a = (uint*)bp->data;
+    if((addr = a[bn % NINDIRECT]) == 0){    // 查表完成
+      a[bn % NINDIRECT] = addr = balloc(ip->dev);
+      log_write(bp);
+    }
+    brelse(bp);
+    return addr;
+  }
 
   panic("bmap: out of range");
 }
@@ -430,6 +453,26 @@ itrunc(struct inode *ip)
     brelse(bp);
     bfree(ip->dev, ip->addrs[NDIRECT]);
     ip->addrs[NDIRECT] = 0;
+  }
+
+  if(ip->addrs[NDIRECT + 1]){
+      struct buf* bp1 = bread(ip->dev, ip->addrs[NDIRECT + 1]);  // 取一级表
+      uint* a1 = (uint*)bp1->data;
+      for (int k = 0; k < NINDIRECT; ++k) {   // 查一级表的所有表项
+          if(a1[k]){
+              struct buf* bp2 = bread(ip->dev, a1[k]);  // 取二级表
+              uint* a2 = (uint*)bp2->data;
+              for (int l = 0; l < NINDIRECT; ++l) {     // 查二级表的所有表项
+                  if(a2[l]){
+                      bfree(ip->dev, a2[l]);    // 释放数据块
+                  }
+              }
+              brelse(bp2);
+              bfree(ip->dev, a1[k]);   // 释放二级表
+          }
+      }
+      brelse(bp1);
+      bfree(ip->dev, ip->addrs[NDIRECT + 1]);   // 释放一级表
   }
 
   ip->size = 0;

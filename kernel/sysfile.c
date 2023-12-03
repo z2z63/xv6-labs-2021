@@ -296,6 +296,26 @@ sys_open(void)
     return -1;
 
   begin_op();
+  int depth = 0;
+  while ((omode & O_NOFOLLOW) == 0 && (ip = namei(path)) != 0 && depth < 16){
+      ilock(ip);
+      if(ip->type != T_SYMLINK){    // type被锁保护，必须先拿锁再判断
+          iunlockput(ip);
+          break;
+      }
+      if(readi(ip, 0, (uint64)path, 0, MAXPATH) != MAXPATH){
+          iunlockput(ip);
+          end_op();
+          return -1;
+      }
+      iunlockput(ip);
+      depth++;
+  }
+  if(depth == 16){
+      end_op();
+      return -1;
+  }
+
 
   if(omode & O_CREATE){
     ip = create(path, T_FILE, 0, 0);
@@ -483,4 +503,32 @@ sys_pipe(void)
     return -1;
   }
   return 0;
+}
+
+
+uint64 sys_symlink(void){
+    char target[MAXPATH], path[MAXPATH];
+    if(argstr(0, target, MAXPATH) < 0 || argstr(1, path, MAXPATH) < 0){
+        return -1;
+    }
+    begin_op();
+    struct inode /**tip,*/ *pip;    // 不对target做任何检查，直到访问时才检查
+//    if((tip = namei(target)) == 0){
+//        end_op();
+//        return -1;
+//    }
+    pip =  create(path, T_SYMLINK, 0, 0);
+    if(pip == 0){
+        end_op();
+        return -1;
+    }
+//    ilock(pip);   // create返回的ip已经上锁了
+    if(writei(pip, 0, (uint64)target, 0, MAXPATH) != MAXPATH){
+        iunlockput(pip);
+        end_op();
+        return -1;
+    }
+    iunlockput(pip);
+    end_op();
+    return 0;
 }
