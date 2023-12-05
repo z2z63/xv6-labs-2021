@@ -5,6 +5,11 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+#include "fcntl.h"
+#include "fs.h"
+#include "sleeplock.h"
+#include "file.h"
+
 
 struct spinlock tickslock;
 uint ticks;
@@ -27,6 +32,56 @@ void
 trapinithart(void)
 {
   w_stvec((uint64)kernelvec);
+}
+
+// 判断addr是否在进程的mmap映射内，并设置对应的vmt
+static char is_mmaped(uint64 addr, struct proc *p, struct vmt** foundvmt){
+    for(int i=0; i < NVMT; i++){
+        if(p->vmtable[i].file && p->vmtable[i].start <= addr && addr < p->vmtable[i].start + p->vmtable[i].length){
+            *foundvmt = &p->vmtable[i];
+            return 1;
+        }
+    }
+    return 0;
+}
+
+/**
+ * mmap可以一次添加多个页的映射，但是mmap_handler一次只能处理一页
+ * */
+int mmap_handler(){
+    uint64 addr = r_stval();
+    struct proc *p = myproc();
+    struct vmt* v;
+
+    if(!is_mmaped(addr, p, &v)){
+        return -1;
+    }
+    void* va_start = (void*)PGROUNDDOWN(addr);  // 需要包含addr指向的内存，所以向下取整
+    if(!(v->prot & PROT_WRITE) && r_scause() == 15){    // 在不可写映射块上写，返回错误
+        return -1;
+    }
+
+    void* pa = kalloc();
+    if(pa == 0){
+        return -1;
+    }
+    ilock(v->file->ip);
+    int len = readi(v->file->ip, 0, (uint64)pa, (uint64)va_start - v->start, PGSIZE);
+    iunlock(v->file->ip);
+    if(len < PGSIZE){
+        memset((char*)pa + len, 0, PGSIZE - len);   // 超出部分设置为0，而不是5
+    }
+    int perm = 0;
+    perm |= PTE_U;
+    if(v->prot & PROT_WRITE){   // 标志从PROT_*转变为PTE_*
+        perm |= PTE_W;
+    }
+    if(v->prot & PROT_READ){
+        perm |= PTE_R;
+    }
+
+    mappages(p->pagetable, (uint64)va_start, PGSIZE, (uint64)pa, perm);
+    return 0;
 }
 
 //
@@ -67,6 +122,12 @@ usertrap(void)
     syscall();
   } else if((which_dev = devintr()) != 0){
     // ok
+  } else if(r_scause() == 13 || r_scause() == 15) {
+      if(mmap_handler() == -1){
+          printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
+          printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
+          p->killed = 1;
+      }
   } else {
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());

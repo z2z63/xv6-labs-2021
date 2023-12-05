@@ -1,3 +1,12 @@
+struct vmt{
+    uint64 start;
+    uint64 length;  // 长度为0表示数组中这个元素没有使用
+    struct file* file;  // 为0表示数组中这个元素没有使用
+
+    // 以下字段只有在file和length不为0时才有意义
+    int prot;
+    int flags;
+};
 // Saved registers for kernel context switches.
 struct context {
   uint64 ra;
@@ -105,4 +114,6 @@ struct proc {
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory
   char name[16];               // Process name (debugging)
+
+  struct vmt vmtable[NVMT];     // 记录进程虚拟内存的分配情况(mmap机制使用)
 };

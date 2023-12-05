@@ -6,6 +6,11 @@
 #include "proc.h"
 #include "defs.h"
 
+#include "fcntl.h"
+#include "sleeplock.h"
+#include "fs.h"
+#include "file.h"
+
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
@@ -164,6 +169,10 @@ freeproc(struct proc *p)
   p->killed = 0;
   p->xstate = 0;
   p->state = UNUSED;
+  memset(p->vmtable, 0, sizeof(struct vmt) * NVMT);    // 快速清零
+  for (int i = 0; i < NVMT; ++i) {
+      p->vmtable[i].start = TRAPFRAME;
+  }
 }
 
 // Create a user page table for a given process,
@@ -287,6 +296,15 @@ fork(void)
     release(&np->lock);
     return -1;
   }
+  // 将父进程的vmtable复制到子进程
+  struct vmt* nvmt = np->vmtable;
+  struct vmt* vmt = p->vmtable;
+  for(int j=0; j<NVMT; j++){
+    memmove(&nvmt[j], &vmt[j], sizeof(struct vmt));
+    if(vmt[j].file){    // 如果有文件才能继承，避免空指针
+        filedup(vmt[j].file);   // 子进程继承父进程打开的文件
+    }
+  }
   np->sz = p->sz;
 
   // copy saved user registers.
@@ -343,6 +361,31 @@ exit(int status)
 
   if(p == initproc)
     panic("init exiting");
+
+  struct vmt* vmt = p->vmtable;
+  for(int i=0; i<NVMT; i++){
+      if(vmt[i].file == 0 || vmt[i].length == 0){
+            continue;
+      }
+      for(int j=0; j< PGROUNDUP(vmt[i].length); j+=PGSIZE){  // j是映射内存区域内部的偏移
+          // 因为页面是懒分配的，munmap时可能这个页面还没有触发分配
+          // 如果没有触发分配，自然也不需要写回
+          if(walkaddr(p->pagetable, vmt[i].start + j) == 0){
+              continue;
+          }
+          if(vmt[i].flags & MAP_SHARED && (vmt[i].prot & PROT_WRITE) != 0){      // 标记为SHARED才能写回文件
+              begin_op();
+              ilock(vmt[i].file->ip);
+              writei(vmt[i].file->ip, 1, vmt[i].start + j, j, vmt[i].length - j);
+              iunlock(vmt[i].file->ip);
+              end_op();
+          }
+          // 先写回文件再释放页面
+          uvmunmap(p->pagetable, vmt[i].start + j, 1, 1);
+      }
+
+
+  }
 
   // Close all open files.
   for(int fd = 0; fd < NOFILE; fd++){

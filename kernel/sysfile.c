@@ -15,6 +15,8 @@
 #include "sleeplock.h"
 #include "file.h"
 #include "fcntl.h"
+#include "memlayout.h"
+
 
 // Fetch the nth word-sized system call argument as a file descriptor
 // and return both the descriptor and the corresponding struct file.
@@ -483,4 +485,113 @@ sys_pipe(void)
     return -1;
   }
   return 0;
+}
+
+uint64 sys_mmap(void){
+    uint64 addr, length, offset;
+    int prot, flags, fd;
+    struct file* pf;
+    if(argaddr(0, &addr) < 0 || argaddr(1, &length) < 0 || argint(2, &prot) < 0
+        || argint(3, &flags) < 0 || argfd(4, &fd, &pf) < 0 || argaddr(5, &offset) < 0){
+        return -1;
+    }
+    // 实验只需要实现部分功能
+    // 1. addr == 0
+    // 2. prot 只能是 PROT_READ 和 PROT_WRITE的任何组合
+    // 3. flags 要么是MAP_SHARED，要么是MAP_PRIVATE
+    // 4. offset == 0
+    if(addr == 0 && prot & (PROT_WRITE | PROT_READ)
+        && (flags & (MAP_SHARED | MAP_PRIVATE)) != (MAP_SHARED | MAP_PRIVATE)
+        && (flags | ~(MAP_SHARED | MAP_PRIVATE))==~(MAP_SHARED | MAP_PRIVATE)
+        && offset == 0){
+        panic("mmap: unimplemented functionality");
+    }
+    if(prot & PROT_WRITE && !pf->writable && flags & MAP_SHARED){     // 不能用只读的文件映射出共享且可写的内存
+        return -1;
+    }
+    filedup(pf);   // 增加文件的引用计数，保证文件关闭后仍然生效
+    // 只做记录
+    struct proc* p = myproc();
+    struct vmt *empty_v = 0;
+    addr = TRAPFRAME;
+    for(int i=0;i<NVMT;i++){
+        if(empty_v == 0 && p->vmtable[i].length == 0){  // 找一个空闲的vmt
+            empty_v = &p->vmtable[i];
+            continue;
+        } else if(p->vmtable[i].length == 0){
+            continue;
+        }
+        uint64 end = p->vmtable[i].start + p->vmtable[i].length;
+        if(p->vmtable[i].start <= addr && addr < end){
+            return -1;  // 不能重叠映射
+        }
+        addr = addr < p->vmtable[i].start ? addr : p->vmtable[i].start;  // 找到地址最低的映射页面
+    }
+    // 每次都找到地址最低的映射页，在这页的低地址方向映射，能保证不重叠，但是会产生空洞
+    empty_v->start = PGROUNDDOWN(addr - length);
+    empty_v->length = length;
+    empty_v->prot = prot;
+    empty_v->flags = flags;
+    empty_v->file = pf;
+    return empty_v->start;
+}
+
+uint64 sys_munmap(void){    // 假定释放映射的页面不会在一次映射的内存打洞
+    uint64 addr, length;
+    if(argaddr(0, &addr) < 0 || argaddr(1, &length) < 0){
+        return -1;
+    }
+    struct proc* p = myproc();
+    struct vmt* v = 0;
+    for(int i=0;i<NVMT;i++){    // 找到对应的vmt
+        if(p->vmtable[i].start <= addr && addr < p->vmtable[i].start + p->vmtable[i].length){
+            v = &p->vmtable[i];
+            break;
+        }
+    }
+    if(v == 0){
+        return -1;
+    }
+
+    if(v->start == addr && v->length == length){    // 一次性释放映射的页面
+        if(v->flags & MAP_SHARED){      // 标记为SHARED才能写回文件
+            begin_op();
+            ilock(v->file->ip);
+            writei(v->file->ip, 1, addr, 0, length);
+            iunlock(v->file->ip);
+            end_op();
+        }
+        if(walkaddr(p->pagetable, addr) != 0){  // 因为页面是懒分配的，munmap时可能这个页面还没有触发分配
+            uvmunmap(p->pagetable, addr, PGROUNDUP(length)/PGSIZE, 1);
+        }
+        vmt_free(v);
+    } else if(v->start == addr && v->length > length){     // 对齐开头
+        if(v->flags & MAP_SHARED) {
+            begin_op();
+            ilock(v->file->ip);
+            writei(v->file->ip, 1, addr, 0, length);
+            iunlock(v->file->ip);
+            end_op();
+        }
+        v->start = addr + length;
+        v->length -= length;
+        if(walkaddr(p->pagetable, addr) != 0){  // 因为页面是懒分配的，munmap时可能这个页面还没有触发分配
+            uvmunmap(p->pagetable, addr, PGROUNDUP(length)/PGSIZE, 1);
+        }
+    } else if(v->start + v->length == addr + length && v->start < addr){    // 对齐结尾
+        if(v->flags & MAP_SHARED) {
+            begin_op();
+            ilock(v->file->ip);
+            writei(v->file->ip, 1, addr, addr - v->start, length);
+            iunlock(v->file->ip);
+            end_op();
+        }
+        v->length -= length;
+        if(walkaddr(p->pagetable, addr) != 0){  // 因为页面是懒分配的，munmap时可能这个页面还没有触发分配
+            uvmunmap(p->pagetable, addr, PGROUNDUP(length)/PGSIZE, 1);
+        }
+    } else {
+        panic("sys_munmap:  unimplemented functionality");
+    }
+    return 0;
 }
