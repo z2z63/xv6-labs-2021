@@ -14,6 +14,7 @@ riscv只允许在M模式获取hartid(hardware thread id)。xv6通过一些技巧
 Invariants指的是不变量。例如链表的Invariants是每一个元素的next指针都指向下一个元素。例如哈希表中的每一个entry的key都是唯一的  
 然而，在操作数据结构时，一定存在这样的时刻，Invariants不成立。如果在Invariants不成立的时刻进行其他操作，就会导致数据结构的破坏
 锁的用途就是保护Invairants。在锁保护的区域内，需要完成的工作是恢复Invariants。锁释放后，Invariants成立。
+
 ---
 也可以认为，数据结构是一种状态机，每一个状态都是Invariants成立的状态。而Invariants不成立的时刻可以认为是在状态转换中出现的**中间态或者非稳态**  
 相应的，Invariants成立的状态可以认为是**稳态**  
